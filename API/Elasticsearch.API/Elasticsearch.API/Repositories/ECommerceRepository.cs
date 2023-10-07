@@ -19,7 +19,7 @@ namespace Elasticsearch.API.Repositories
             _client = client;
         }
 
-        public async Task<ImmutableList<ECommerce>> TermQuery(string customerFirstName)
+        public async Task<ImmutableList<ECommerce>> TermQueryAsync(string customerFirstName)
         {
             // way 1
             //var result = await _client.SearchAsync<ECommerce>(s =>s.Index(indexName).Query(y => y.Term(t => t.Field("customer_first_name.keyword").Value(customerFirstName))));
@@ -36,7 +36,7 @@ namespace Elasticsearch.API.Repositories
             return result.Documents.ToImmutableList();
         }
 
-        public async Task<ImmutableList<ECommerce>> TermsQuery(List<string> customerFirstNameList)
+        public async Task<ImmutableList<ECommerce>> TermsQueryAsync(List<string> customerFirstNameList)
         {
             List<FieldValue> terms = new List<FieldValue>();
             foreach (var item in customerFirstNameList)
@@ -60,6 +60,35 @@ namespace Elasticsearch.API.Repositories
             .Field(f=> f.CustomerFirstName
             .Suffix("keyword"))
             .Terms(new TermsQueryField(terms.AsReadOnly())))));
+
+            foreach (var item in result.Hits) item.Source.Id = item.Id;
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> PrefixQueryAsync(string customerFullName)
+        {
+            //way 1
+            var result = await _client.SearchAsync<ECommerce>(s =>s.Index(indexName)
+            .Query(y => y
+            .Prefix(p => p
+            .Field(f=> f.CustomerFullName
+            .Suffix("keyword"))
+            .Value(customerFullName))));
+
+            foreach (var item in result.Hits) item.Source.Id = item.Id;
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> RangeQueryAsync(double fromPrice, double toPrice)
+        {
+            //way 1
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Query(q => q
+            .Range(r => r
+            .NumberRange(nr => nr
+            .Field(f => f.TaxfulTotalPrice)
+            .Gte(fromPrice)
+            .Lte(toPrice)))));
 
             foreach (var item in result.Hits) item.Source.Id = item.Id;
             return result.Documents.ToImmutableList();

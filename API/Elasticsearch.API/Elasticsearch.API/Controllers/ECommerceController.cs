@@ -18,7 +18,7 @@ namespace Elasticsearch.API.Controllers
         [HttpGet]
         public async Task<IActionResult> TermQuery(string customerFirstName)
         {
-            var response = await _eCommerceRepository.TermQuery(customerFirstName);
+            var response = await _eCommerceRepository.TermQueryAsync(customerFirstName);
 
             return Ok(response);
         }
@@ -26,7 +26,23 @@ namespace Elasticsearch.API.Controllers
         [HttpPost]
         public async Task<IActionResult> TermsQuery(List<string> customerFirstNameList)
         {
-            var response = await _eCommerceRepository.TermsQuery(customerFirstNameList);
+            var response = await _eCommerceRepository.TermsQueryAsync(customerFirstNameList);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PrefixQuery(string customerFullName)
+        {
+            var response = await _eCommerceRepository.PrefixQueryAsync(customerFullName);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RangeQuery(double fromPrice, double toPrice)
+        {
+            var response = await _eCommerceRepository.RangeQueryAsync(fromPrice,toPrice);
 
             return Ok(response);
         }
