@@ -5,10 +5,8 @@ D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Elasticsearch.API.runtimeconfig.json
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Elasticsearch.API.dll
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Elasticsearch.API.pdb
-D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Elasticsearch.Net.dll
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Microsoft.AspNetCore.OpenApi.dll
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Microsoft.OpenApi.dll
-D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Nest.dll
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Swashbuckle.AspNetCore.Swagger.dll
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerUI.dll
@@ -33,3 +31,5 @@ D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\obj\Debug\net7.0
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\obj\Debug\net7.0\Elasticsearch.API.pdb
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\obj\Debug\net7.0\Elasticsearch.API.genruntimeconfig.cache
 D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\obj\Debug\net7.0\ref\Elasticsearch.API.dll
+D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Elastic.Clients.Elasticsearch.dll
+D:\elasticsearch-lesson\API\Elasticsearch.API\Elasticsearch.API\bin\Debug\net7.0\Elastic.Transport.dll

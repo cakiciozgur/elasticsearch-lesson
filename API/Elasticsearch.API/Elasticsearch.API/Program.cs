@@ -1,9 +1,6 @@
 using Elasticsearch.API.Extensions;
 using Elasticsearch.API.Repositories;
 using Elasticsearch.API.Services;
-using Elasticsearch.Net;
-using Microsoft.Extensions.DependencyInjection;
-using Nest;
 
 var builder = WebApplication.CreateBuilder(args);
 

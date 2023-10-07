@@ -1,4 +1,5 @@
-﻿using Elasticsearch.API.DTOs;
+﻿using Elastic.Clients.Elasticsearch;
+using Elasticsearch.API.DTOs;
 using Elasticsearch.API.Model;
 using Elasticsearch.API.Repositories;
 using System.Collections.Immutable;
@@ -77,14 +78,15 @@ namespace Elasticsearch.API.Services
         {
             var res = await _productRepository.DeleteAsync(id);
 
-            if (!res.IsValid && res.Result == Nest.Result.NotFound)
+            if (!res.IsValidResponse && res.Result == Result.NotFound)
             {
                 return ResponseDto<bool>.Fail("Silmek istediğiniz ürün bulunamadı!", System.Net.HttpStatusCode.NotFound);
             }
 
-            if (!res.IsValid)
+            if (!res.IsValidResponse)
             {
-                _logger.LogError(res.OriginalException, res.ServerError.Error.ToString());
+                res.TryGetOriginalException(out Exception? exception);
+                _logger.LogError(exception, res.ElasticsearchServerError != null && res.ElasticsearchServerError.HasError() ? res.ElasticsearchServerError.Error.ToString() : "Error");
 
                 return ResponseDto<bool>.Fail("Product silme sırasında bir hata meydana geldi", System.Net.HttpStatusCode.NotFound);
             }
