@@ -22,5 +22,13 @@ namespace Elasticsearch.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> TermsQuery(List<string> customerFirstNameList)
+        {
+            var response = await _eCommerceRepository.TermsQuery(customerFirstNameList);
+
+            return Ok(response);
+        }
     }
 }

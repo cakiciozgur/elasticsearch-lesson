@@ -35,5 +35,34 @@ namespace Elasticsearch.API.Repositories
             foreach (var item in result.Hits) item.Source.Id = item.Id;
             return result.Documents.ToImmutableList();
         }
+
+        public async Task<ImmutableList<ECommerce>> TermsQuery(List<string> customerFirstNameList)
+        {
+            List<FieldValue> terms = new List<FieldValue>();
+            foreach (var item in customerFirstNameList)
+            {
+                terms.Add(item);
+            }
+            //way 1
+            //var termsQuery = new TermsQuery()
+            //{
+            //    Field = "customer_first_name.keyword",
+            //    Terms = new TermsQueryField(terms.AsReadOnly()),
+            //};
+
+            //var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Query(termsQuery));
+
+            //way 2
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Size(100)
+            .Query(q=> q
+            .Terms(t=> t
+            .Field(f=> f.CustomerFirstName
+            .Suffix("keyword"))
+            .Terms(new TermsQueryField(terms.AsReadOnly())))));
+
+            foreach (var item in result.Hits) item.Source.Id = item.Id;
+            return result.Documents.ToImmutableList();
+        }
     }
 }
