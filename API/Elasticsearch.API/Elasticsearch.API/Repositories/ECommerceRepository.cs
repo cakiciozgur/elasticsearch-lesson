@@ -6,6 +6,7 @@ using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Elasticsearch.API.Extensions;
 
 namespace Elasticsearch.API.Repositories
 {
@@ -32,8 +33,8 @@ namespace Elasticsearch.API.Repositories
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Query(termQuery));
 
 
-            foreach (var item in result.Hits) item.Source.Id = item.Id;
-            return result.Documents.ToImmutableList();
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
         }
 
         public async Task<ImmutableList<ECommerce>> TermsQueryAsync(List<string> customerFirstNameList)
@@ -61,8 +62,8 @@ namespace Elasticsearch.API.Repositories
             .Suffix("keyword"))
             .Terms(new TermsQueryField(terms.AsReadOnly())))));
 
-            foreach (var item in result.Hits) item.Source.Id = item.Id;
-            return result.Documents.ToImmutableList();
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
         }
 
         public async Task<ImmutableList<ECommerce>> PrefixQueryAsync(string customerFullName)
@@ -75,8 +76,8 @@ namespace Elasticsearch.API.Repositories
             .Suffix("keyword"))
             .Value(customerFullName))));
 
-            foreach (var item in result.Hits) item.Source.Id = item.Id;
-            return result.Documents.ToImmutableList();
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
         }
 
         public async Task<ImmutableList<ECommerce>> RangeQueryAsync(double fromPrice, double toPrice)
@@ -90,8 +91,8 @@ namespace Elasticsearch.API.Repositories
             .Gte(fromPrice)
             .Lte(toPrice)))));
 
-            foreach (var item in result.Hits) item.Source.Id = item.Id;
-            return result.Documents.ToImmutableList();
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
         }
 
         public async Task<ImmutableList<ECommerce>> MatchAllQueryAsync()
@@ -101,8 +102,8 @@ namespace Elasticsearch.API.Repositories
             .Query(q=> q
             .MatchAll()));
 
-            foreach (var item in result.Hits) item.Source.Id = item.Id;
-            return result.Documents.ToImmutableList();
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
         }
 
         public async Task<ImmutableList<ECommerce>> PaginationQueryAsync(int page,int pageSize)
@@ -114,8 +115,19 @@ namespace Elasticsearch.API.Repositories
             .Query(q => q
             .MatchAll()));
 
-            foreach (var item in result.Hits) item.Source.Id = item.Id;
-            return result.Documents.ToImmutableList();
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
+        }
+        public async Task<ImmutableList<ECommerce>> WildCardQueryAsync(string customerFullName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Query(q => q
+            .Wildcard(w=> w
+            .Field(f=> f.CustomerFullName.Suffix("keyword"))
+            .Wildcard(customerFullName))));
+
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
         }
     }
 }

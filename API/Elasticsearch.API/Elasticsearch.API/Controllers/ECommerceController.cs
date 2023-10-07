@@ -62,5 +62,13 @@ namespace Elasticsearch.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> WildCardQuery(string customerFullName)
+        {
+            var response = await _eCommerceRepository.WildCardQueryAsync(customerFullName);
+
+            return Ok(response);
+        }
     }
 }
