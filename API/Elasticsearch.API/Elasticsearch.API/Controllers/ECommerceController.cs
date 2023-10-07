@@ -46,5 +46,21 @@ namespace Elasticsearch.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> MatchAllQuery()
+        {
+            var response = await _eCommerceRepository.MatchAllQueryAsync();
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PaginationQuery(int page=1, int pageSize=3)
+        {
+            var response = await _eCommerceRepository.PaginationQueryAsync(page,pageSize);
+
+            return Ok(response);
+        }
     }
 }

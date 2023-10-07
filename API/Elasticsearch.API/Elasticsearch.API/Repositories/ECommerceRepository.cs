@@ -93,5 +93,29 @@ namespace Elasticsearch.API.Repositories
             foreach (var item in result.Hits) item.Source.Id = item.Id;
             return result.Documents.ToImmutableList();
         }
+
+        public async Task<ImmutableList<ECommerce>> MatchAllQueryAsync()
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Size(25)
+            .Query(q=> q
+            .MatchAll()));
+
+            foreach (var item in result.Hits) item.Source.Id = item.Id;
+            return result.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> PaginationQueryAsync(int page,int pageSize)
+        {
+            // page 0 gelirse hata verir business katmanında kontrolü yapılmalı
+            var pageFrom = (page-1) * pageSize;
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Size(pageSize).From(pageFrom)
+            .Query(q => q
+            .MatchAll()));
+
+            foreach (var item in result.Hits) item.Source.Id = item.Id;
+            return result.Documents.ToImmutableList();
+        }
     }
 }
