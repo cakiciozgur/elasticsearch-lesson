@@ -2,6 +2,7 @@ using Elasticsearch.API.Extensions;
 using Elasticsearch.API.Repositories;
 using Elasticsearch.API.Services;
 using Elasticsearch.Net;
+using Microsoft.Extensions.DependencyInjection;
 using Nest;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddElastic(builder.Configuration);
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ProductRepository>();
+builder.Services.AddLogger();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
