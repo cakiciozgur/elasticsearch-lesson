@@ -88,6 +88,14 @@ namespace Elasticsearch.API.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> MultiMatchQueryFullTextAsync(string name)
+        {
+            var response = await _eCommerceRepository.MultiMatchQueryFullTextAsync(name);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> MatchBoolPrefixQueryFullText(string customerFullName)
         {
             var response = await _eCommerceRepository.MatchBoolPrefixQueryFullTextAsync(customerFullName);
@@ -99,6 +107,22 @@ namespace Elasticsearch.API.Controllers
         public async Task<IActionResult> MatchPhraseQueryFullText(string customerFullName)
         {
             var response = await _eCommerceRepository.MatchPhraseQueryFullTextAsync(customerFullName);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CompoundQueryExampleOne(string cityName, double taxtfulTotalPrice, string category, string manufactur)
+        {
+            var response = await _eCommerceRepository.CompoundQueryExampleOneAsync(cityName, taxtfulTotalPrice, category, manufactur);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CompoundQueryExampleTwo(string customerFullName)
+        {
+            var response = await _eCommerceRepository.CompoundQueryExampleTwoAsync(customerFullName);
 
             return Ok(response);
         }

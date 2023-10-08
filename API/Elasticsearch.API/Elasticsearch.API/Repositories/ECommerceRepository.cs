@@ -154,6 +154,19 @@ namespace Elasticsearch.API.Repositories
             return response.Documents.ToImmutableList();
         }
 
+        public async Task<ImmutableList<ECommerce>> MultiMatchQueryFullTextAsync(string name)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100)
+            .Query(q => q
+            .MultiMatch(mm=> mm
+            .Fields(new Field("customer_first_name")
+            .And(new Field("customer_last_name"))
+            .And(new Field("customer_full_name"))).Query(name))));
+
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
+        }
+
         public async Task<ImmutableList<ECommerce>> MatchBoolPrefixQueryFullTextAsync(string customerFullName) //Sultan Al Me ile arama yaparsak Sultan OR Al ve Me ile başlayanlar sonuncu kelime prefix gibi davranır
         {
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100)
@@ -173,6 +186,57 @@ namespace Elasticsearch.API.Repositories
             .MatchPhrase(m => m
             .Field(f => f.CustomerFullName)
             .Query(customerFullName))));
+
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> CompoundQueryExampleOneAsync(string cityName, double taxtfulTotalPrice, string category, string manufactur)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100)
+            .Query(q => q
+            .Bool(b=> b
+                .Must(m=> m /*mutlaka olmalı skor değerine katkı sağlar*/
+                    .Term(t=> t
+                    .Field("geoip.city_name").Value(cityName)))  /*Must/MustNot/Should/Filter sorgusunun bittiği parantezden önce ikinci bir query yazılabilir*/
+
+                .MustNot(mn=> mn /*olmamalı*/
+                    .Range(r=> r
+                    .NumberRange(nr=> nr
+                    .Field(f=> f.TaxfulTotalPrice)
+                    .Lte(taxtfulTotalPrice))))
+
+                .Should(s=> s /*olsada olur olmasada olur skor değerine katkı vardır*/
+                    .Term(t=> t
+                    .Field(f=> f.Category.Suffix("keyword")).Value(category)))
+
+                .Filter(fi=> fi /*mutalaka olmalı skor değerine katkı yoktur*/
+                    .Term(t=> t
+                    .Field("manufacturer.keyword").Value(manufactur))))));
+
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> CompoundQueryExampleTwoAsync(string customerFullName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100)
+            .Query(q => q
+            .Bool(b => b
+                .Should(s => s              /*shoul yani OR kullanarak birebir eşleşen veya prefix olarak eşleşen kayıtları getirir*/
+                    .Match(m => m
+                        .Field(f => f.CustomerFullName)
+                        .Query(customerFullName))))
+                    .Prefix(p => p
+                        .Field(f => f.CustomerFullName.Suffix("keyword"))
+                        .Value(customerFullName))));
+
+            //var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100) /*yuakarıdaki ile aynı işi yapar*/
+            //.Query(q => q
+            //.MatchPhrasePrefix(mp => mp
+            //.Field(f => f.CustomerFullName)
+            //.Query(customerFullName))));
+
 
             var response = Document.MoveDocumentId(result);
             return response.Documents.ToImmutableList();
