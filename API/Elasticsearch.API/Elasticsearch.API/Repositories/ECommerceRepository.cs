@@ -20,7 +20,7 @@ namespace Elasticsearch.API.Repositories
             _client = client;
         }
 
-        public async Task<ImmutableList<ECommerce>> TermQueryAsync(string customerFirstName)
+        public async Task<ImmutableList<ECommerce>> TermQueryAsync(string customerFirstName) // aranacak kelime birebir geçmesi gerekir o yüzden keyword'de aranır
         {
             // way 1
             //var result = await _client.SearchAsync<ECommerce>(s =>s.Index(indexName).Query(y => y.Term(t => t.Field("customer_first_name.keyword").Value(customerFirstName))));
@@ -37,7 +37,7 @@ namespace Elasticsearch.API.Repositories
             return response.Documents.ToImmutableList();
         }
 
-        public async Task<ImmutableList<ECommerce>> TermsQueryAsync(List<string> customerFirstNameList)
+        public async Task<ImmutableList<ECommerce>> TermsQueryAsync(List<string> customerFirstNameList) // aranacak kelimeler birebir geçmesi gerekir o yüzden keyword'de aranır
         {
             List<FieldValue> terms = new List<FieldValue>();
             foreach (var item in customerFirstNameList)
@@ -66,7 +66,7 @@ namespace Elasticsearch.API.Repositories
             return response.Documents.ToImmutableList();
         }
 
-        public async Task<ImmutableList<ECommerce>> PrefixQueryAsync(string customerFullName)
+        public async Task<ImmutableList<ECommerce>> PrefixQueryAsync(string customerFullName) // Örneğin Sultan Al Mayer, Sultan Al Brat gibi veriler var ise ve ben Sultan diye aratırsam tüm veriler gelir.
         {
             //way 1
             var result = await _client.SearchAsync<ECommerce>(s =>s.Index(indexName)
@@ -80,7 +80,7 @@ namespace Elasticsearch.API.Repositories
             return response.Documents.ToImmutableList();
         }
 
-        public async Task<ImmutableList<ECommerce>> RangeQueryAsync(double fromPrice, double toPrice)
+        public async Task<ImmutableList<ECommerce>> RangeQueryAsync(double fromPrice, double toPrice) // belirli bir fiyat aralığındakileri getirir
         {
             //way 1
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
@@ -95,7 +95,7 @@ namespace Elasticsearch.API.Repositories
             return response.Documents.ToImmutableList();
         }
 
-        public async Task<ImmutableList<ECommerce>> MatchAllQueryAsync()
+        public async Task<ImmutableList<ECommerce>> MatchAllQueryAsync() // o index içerisindeki tüm datayı getirir
         {
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
             .Size(25)
@@ -106,7 +106,7 @@ namespace Elasticsearch.API.Repositories
             return response.Documents.ToImmutableList();
         }
 
-        public async Task<ImmutableList<ECommerce>> PaginationQueryAsync(int page,int pageSize)
+        public async Task<ImmutableList<ECommerce>> PaginationQueryAsync(int page,int pageSize) // sayfalama kurgusu
         {
             // page 0 gelirse hata verir business katmanında kontrolü yapılmalı
             var pageFrom = (page-1) * pageSize;
@@ -118,7 +118,7 @@ namespace Elasticsearch.API.Repositories
             var response = Document.MoveDocumentId(result);
             return response.Documents.ToImmutableList();
         }
-        public async Task<ImmutableList<ECommerce>> WildCardQueryAsync(string customerFullName)
+        public async Task<ImmutableList<ECommerce>> WildCardQueryAsync(string customerFullName) // örneğin 1=> "mav*" sorgusu mav ile başlayanları getirir 2=> "*ze" sorgusu ze ile bitenleri getirir 3=> "d?ta*" d ile başlayan ikinci karakteri öenmli değil joker olacak ta ile devam edenleri getirir
         {
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
             .Query(q => q
@@ -130,7 +130,7 @@ namespace Elasticsearch.API.Repositories
             return response.Documents.ToImmutableList();
         }
 
-        public async Task<ImmutableList<ECommerce>> FuzzyQueryAsync(string customerName)
+        public async Task<ImmutableList<ECommerce>> FuzzyQueryAsync(string customerName) // örneğin lacivert kelimesi içerisinde geçen farklı harflerin kaç tanesi yanlış olabilir fuzziness = 1 ise lacivrt ile bulabilir. fuzziness = 2 ise lacvrt olarak arattığımızda bulabilir. ek olarak fuzziness otomatik bırakılabilir. 
         {
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
             .Query(q => q
@@ -138,6 +138,41 @@ namespace Elasticsearch.API.Repositories
             .Field(f => f.CustomerFirstName.Suffix("keyword")).Value(customerName)
             .Fuzziness(new Fuzziness(1)))).Sort(sort=> sort
             .Field(f=> f.TaxfulTotalPrice,new FieldSort() { Order = SortOrder.Asc })));
+
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> MatchQueryFullTextAsync(string category) // örneğin Women's Clothing ile arama yaparsak Women's OR Clothing şeklinde arar. Ek olarak operator vererek bunu değiştirebiliriz.
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100)
+            .Query(q => q
+            .Match(m=> m
+            .Field(f=> f.Category).Query(category).Operator(Operator.And))));
+
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> MatchBoolPrefixQueryFullTextAsync(string customerFullName) //Sultan Al Me ile arama yaparsak Sultan OR Al ve Me ile başlayanlar sonuncu kelime prefix gibi davranır
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100)
+            .Query(q => q
+            .MatchBoolPrefix(m=> m
+            .Field(f=> f.CustomerFullName)
+            .Query(customerFullName))));
+
+            var response = Document.MoveDocumentId(result);
+            return response.Documents.ToImmutableList();
+        }
+
+        public async Task<ImmutableList<ECommerce>> MatchPhraseQueryFullTextAsync(string customerFullName) //Sultan Al Meyer ile arama yaparsak birebir tutması gerekir. Sultan Al ile arama yaparsak bu öbeğin sonunda kelimeler olabilir örneğin Sultan Al Prat,Sultan Al Brey
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(100)
+            .Query(q => q
+            .MatchPhrase(m => m
+            .Field(f => f.CustomerFullName)
+            .Query(customerFullName))));
 
             var response = Document.MoveDocumentId(result);
             return response.Documents.ToImmutableList();
