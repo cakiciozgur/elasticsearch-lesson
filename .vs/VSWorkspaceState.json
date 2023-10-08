@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\API",
+    "\\API\\Elasticsearch.API",
+    "\\Docker"
   ],
-  "SelectedNode": "\\API",
+  "SelectedNode": "\\API\\Elasticsearch.API\\Elasticsearch.API.sln",
   "PreviewInSolutionExplorer": false
 }
