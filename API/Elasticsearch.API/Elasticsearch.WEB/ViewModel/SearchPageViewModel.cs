@@ -1,4 +1,7 @@
-﻿namespace Elasticsearch.WEB.ViewModel
+﻿using Microsoft.AspNetCore.Http.Extensions;
+using System.Text;
+
+namespace Elasticsearch.WEB.ViewModel
 {
     public class SearchPageViewModel
     {
@@ -11,29 +14,53 @@
 
         public int StartPage()
         {
-            return Page - 12 <=0 ? 1 : Page-12;
+            return Page - 6 <= 0 ? 1 : Page-6;
         }
 
         public long EndPage()
         {
-            return Page + 12 >= PageLinkCount ? PageLinkCount : Page + 12;
+            return Page + 6 >= PageLinkCount ? PageLinkCount : Page + 6;
         }
-        public string CreatePageUrl(HttpRequest request, int page, int pageSize)
+        //public string CreatePageUrl(HttpRequest request, long page, int pageSize)
+        //{
+        //    string currentUrl = new Uri($"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}").AbsoluteUri;
+
+        //    if (currentUrl.Contains("page", StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        currentUrl = currentUrl.Replace($"Page={Page}", $"Page={page}", StringComparison.OrdinalIgnoreCase);
+        //        currentUrl = currentUrl.Replace($"PageSize={PageSize}", $"PageSize={pageSize}", StringComparison.OrdinalIgnoreCase);
+        //    }
+        //    else
+        //    {
+        //        currentUrl = $"{currentUrl}?Page={page}";
+        //        currentUrl = $"{currentUrl}&PageSize={pageSize}";
+        //    }
+
+        //    return currentUrl;
+        //}
+
+        public string CreatePageUrl(HttpRequest request, long page, int pageSize)
         {
-            string currentUrl = new Uri($"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}").AbsoluteUri;
+            var baseUrl = $"{request.Path}";
+            var queryString = new StringBuilder();
 
-            if (currentUrl.Contains("page", StringComparison.OrdinalIgnoreCase))
+            foreach (var (key, values) in request.Query)
             {
-                currentUrl = currentUrl.Replace($"Page={Page}", $"Page={page}", StringComparison.OrdinalIgnoreCase);
-                currentUrl = currentUrl.Replace($"PageSize={PageSize}", $"PageSize={PageSize}", StringComparison.OrdinalIgnoreCase);
-            }
-            else
-            {
-                currentUrl = $"{currentUrl}?Page={page}";
-                currentUrl = $"{currentUrl}&PageSize={PageSize}";
+                if (key.ToLower() != "page" && key.ToLower() != "pagesize")
+                {
+                    foreach (var value in values)
+                    {
+                        queryString.Append($"{key}={value}&");
+                    }
+                }
             }
 
-            return currentUrl;
+            queryString.Append($"Page={page}&PageSize={pageSize}");
+
+            var fullUrl = $"{baseUrl}?{queryString.ToString().TrimEnd('&')}";
+
+            return fullUrl;
         }
+
     }
 }

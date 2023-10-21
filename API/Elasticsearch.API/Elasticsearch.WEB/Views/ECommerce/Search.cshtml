@@ -19,7 +19,7 @@
                 </div>
                 <div class="mb-3">
                     <label asp-for="SearchViewModel.Gender" class="form-label"></label>
-                    <input asp-for="SearchViewModel.Gender" class="form-control" rows="3">
+                    <input asp-for="SearchViewModel.Gender" class="form-control">
                 </div>
                 <div class="mb-3">
                     <label asp-for="SearchViewModel.OrderDateStart" class="form-label"></label>
@@ -30,7 +30,7 @@
                     <input asp-for="SearchViewModel.OrderDateEnd" class="form-control">
                 </div>
                 <div class="mb-3">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">Search</button>
                 </div>
             </form>
         </div>
@@ -79,14 +79,12 @@
                     }
 
                     <li class="page-item">
-                        <a class="page-link" href="@Model.CreatePageUrl(Context.Request,(int)Model.PageLinkCount,Model.PageSize)">Last</a>
+                        <a class="page-link" href="@Model.CreatePageUrl(Context.Request,Model.PageLinkCount,Model.PageSize)">Last</a>
                     </li>
 
                 </ul>
             </nav>
         </div>
     </div>
-
-
 </div>
 

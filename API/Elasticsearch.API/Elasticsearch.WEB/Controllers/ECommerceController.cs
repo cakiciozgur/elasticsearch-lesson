@@ -13,6 +13,7 @@ namespace Elasticsearch.WEB.Controllers
             _eCommerceService = eCommerceService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Search([FromQuery] SearchPageViewModel searchPageViewModel)
         {
             var (list, totalCount, pageLinkCount) = await _eCommerceService.SearchAsync(searchPageViewModel.SearchViewModel, searchPageViewModel.Page, searchPageViewModel.PageSize);
