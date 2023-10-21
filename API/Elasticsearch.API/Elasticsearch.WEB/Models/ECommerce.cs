@@ -21,7 +21,7 @@ namespace Elasticsearch.WEB.Models
         [JsonPropertyName("order_date")]
         public DateTime OrderDate { get; set; }
         [JsonPropertyName("customer_gender")]
-        public DateTime Gender { get; set; }
+        public string Gender { get; set; }
         [JsonPropertyName("products")]
         public List<Product> Products { get; set; } = null!;
     }

@@ -26,6 +26,13 @@ namespace Elasticsearch.WEB.Repositories
 
             List<Action<QueryDescriptor<ECommerce>>> listQuery = new();
 
+            if(searchViewModel is null)
+            {
+                listQuery.Add(g => g.MatchAll());
+
+                return await CalculateResultSet(page, pageSize, listQuery);
+            }
+
             if (!string.IsNullOrWhiteSpace(searchViewModel.Category))
             {
                 Action<QueryDescriptor<ECommerce>> query = (q) => q.Match(m => m
@@ -63,10 +70,21 @@ namespace Elasticsearch.WEB.Repositories
 
             if (!string.IsNullOrWhiteSpace(searchViewModel.Gender))
             {
-                Action<QueryDescriptor<ECommerce>> query = (q) => q.Term(t=> t.Field(f=> f.Gender).Value(searchViewModel.Gender));
+                Action<QueryDescriptor<ECommerce>> query = (q) => q.Term(t=> t.Field(f=> f.Gender).Value(searchViewModel.Gender).CaseInsensitive());
                 listQuery.Add(query);
             }
 
+            if (!listQuery.Any())
+            {
+                listQuery.Add(g => g.MatchAll());
+            }
+
+            return await CalculateResultSet(page, pageSize, listQuery);
+
+        }
+
+        private async Task<(List<ECommerce> list, long count)> CalculateResultSet(int page, int pageSize, List<Action<QueryDescriptor<ECommerce>>> listQuery)
+        {
             var pageFrom = (page - 1) * pageSize;
 
             var result = await _elasticsearchClient.SearchAsync<ECommerce>(s => s.Index(indexName).Size(pageSize).From(pageFrom)
