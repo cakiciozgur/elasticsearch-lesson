@@ -20,6 +20,10 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xTYXZlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/elasticsearch-lesson/API/Elasticsearch.API/Elasticsearch.WEB/Views/Blog/Search.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xTZWFyY2guY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/elasticsearch-lesson/API/Elasticsearch.API/Elasticsearch.WEB/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
